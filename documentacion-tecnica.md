@@ -2,7 +2,6 @@
 
 **Versión:** 1.0.0  
 **Última actualización:** Mayo 2026  
-**Repositorio:** *—*
 
 ## 1. Descripción general
 
