@@ -91,4 +91,17 @@ export const SIGNOS = {
   ")": pattern(3, 4, 5),
 };
 
+/** Mapa de dígitos decimales 0–9 a letras braille (tras el prefijo numérico). */
+export const DIGITOS_A_LETRA = {
+  "0": "j",
+  "1": "a",
+  "2": "b",
+  "3": "c",
+  "4": "d",
+  "5": "e",
+  "6": "f",
+  "7": "g",
+  "8": "h",
+  "9": "i",
+};
 
