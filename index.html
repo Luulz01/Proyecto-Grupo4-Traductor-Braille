@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Traductor de texto español a braille con visualización de cuadratines de 6 puntos.">
+  <title>Traductor Braille</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell no-print">
+  <a class="skip-link" href="#entrada">Saltar al contenido principal</a>
+
+  <header class="site-header">
+    <div class="container">
+      <h1>Traductor Braille</h1>
+      <p class="tagline">Convierte texto en español a braille y visualiza cada cuadratín de 6 puntos.</p>
+    </div>
+  </header>
+
+  <main class="container" id="contenido-principal">
+    <section class="panel panel-input" aria-labelledby="titulo-entrada">
+      <h2 id="titulo-entrada">Texto en español</h2>
+      <label for="entrada" class="visually-hidden">Escribe o pega el texto a traducir</label>
+      <textarea
+        id="entrada"
+        name="entrada"
+        rows="6"
+        maxlength="2000"
+        placeholder="Escribe aquí: letras, números, vocales acentuadas (á, é, í, ó, ú, ü), ñ y signos (. , ; : ¿ ? ¡ ! - ' &quot;)"
+        aria-describedby="contador-ayuda"
+      ></textarea>
+      <div class="meta-row">
+        <p id="contador-ayuda" class="help-text" aria-live="polite">
+          <span id="contador">0</span> / 2000 caracteres
+        </p>
+        <div class="actions">
+          <button type="button" id="btn-traducir" class="btn btn-primary">
+            Traducir a braille
+          </button>
+          <button type="button" id="btn-limpiar" class="btn btn-secondary">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-output" aria-labelledby="titulo-salida" aria-live="polite" aria-atomic="true">
+      <h2 id="titulo-salida">Resultado en braille</h2>
+
+      <!-- Toggle de vista -->
+      <div class="vista-toggle" role="group" aria-label="Modo de visualización">
+        <button type="button" id="btn-vista-celdas" class="btn-vista activo" aria-pressed="true">
+          ⠿ Cuadratines
+        </button>
+        <button type="button" id="btn-vista-unicode" class="btn-vista" aria-pressed="false">
+          Aá Unicode
+        </button>
+      </div>
+
+      <p id="estado-salida" class="status-text">Escribe texto y pulsa «Traducir a braille» para ver los cuadratines.</p>
+
+      <div class="acciones-impresion" id="acciones-impresion" hidden>
+        <button type="button" id="btn-imprimir" class="btn btn-imprimir">
+          Imprimir señalética
+        </button>
+      </div>
+
+      <!-- Vista cuadratines (por defecto) -->
+      <div id="salida-braille" class="braille-output" role="img" aria-label="Representación visual en braille"></div>
+
+      <!-- Vista unicode -->
+      <div id="salida-unicode" class="braille-unicode-output" role="img" aria-label="Braille en caracteres unicode" hidden></div>
+
+      <details class="leyenda" id="leyenda">
+        <summary>Ver leyenda del cuadratín</summary>
+        <p>Cada celda tiene 6 puntos numerados así:</p>
+        <ol class="leyenda-puntos">
+          <li>Superior izquierda</li>
+          <li>Central izquierda</li>
+          <li>Inferior izquierda</li>
+          <li>Superior derecha</li>
+          <li>Central derecha</li>
+          <li>Inferior derecha</li>
+        </ol>
+      </details>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>Braille español de grado 1 · Sin dependencias externas</p>
+    </div>
+  </footer>
+  </div>
+
+  <!-- Placa de señalética (solo visible al imprimir) -->
+  <div id="senaletica-impresion" class="senaletica-impresion" aria-hidden="true">
+    <article class="senaletica-placa">
+      <section class="senaletica-bloque">
+        <h2 class="senaletica-titulo">Texto en tinta</h2>
+        <p class="senaletica-texto" id="senaletica-texto"></p>
+      </section>
+      <section class="senaletica-bloque">
+        <h2 class="senaletica-titulo">Texto en Braille</h2>
+        <p class="senaletica-braille" id="senaletica-braille" lang="es"></p>
+      </section>
+    </article>
+  </div>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
