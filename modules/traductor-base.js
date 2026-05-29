@@ -135,6 +135,13 @@ export function textoABraille(texto) {
     }
 
     if (SIGNOS[char] !== undefined && typeof SIGNOS[char] !== "string") {
+      // Si es coma o punto, y el siguiente carácter es un dígito (decimal), mantener modoNumero
+      if ((char === "," || char === ".") && /\d/.test(texto[i + 1])) {
+        resultado.push({ type: "cell", dots: SIGNOS[char], label: char });
+        // conservar modoNumero tal como esté (no reiniciarlo)
+        continue;
+      }
+
       modoNumero = false;
       resultado.push({ type: "cell", dots: SIGNOS[char], label: char });
       continue;

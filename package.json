@@ -1,10 +1,11 @@
 {
   "name": "proyecto-grupo4-traductor-braille",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "script.js",
   "scripts": {
-    "test": "jest"
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
