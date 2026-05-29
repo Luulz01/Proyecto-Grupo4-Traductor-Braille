@@ -110,7 +110,8 @@ main
 └── feature/styles
 ```
 
-![alt text]({DE9CB490-88B3-40C6-B2E3-0CF1DAF9EE23}.png)
+<img width="1623" height="685" alt="{B344BCAD-1FDB-43E0-BF56-ECD6AFE83163}" src="https://github.com/user-attachments/assets/656c2faa-9e15-4bd6-8179-2edd7bd1221f" />
+
 
 
 ## Descripción de ramas
