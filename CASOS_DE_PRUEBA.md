@@ -1,7 +1,7 @@
 # Casos de Prueba — Traductor Braille
 **Asignatura:** Construcción y Evolución de Software  
 **Rama:** `documentacion`  
-**Módulo testeado:** `brailleTranslator.js` → función `textoABraille(texto)`  
+**Módulo testeado:** `traductor-base.js` que depende internamente de los mapas de caracteres definidos en datos-braille.js, por lo que los casos de prueba validan implícitamente ambos módulos. 
 **Framework:** Jest  
 **Comando de ejecución:** `npm test`
 
@@ -9,7 +9,7 @@
 
 ## Descripción general del caso de uso
 
-El caso de uso principal de la aplicación *Traductor Braille* consiste en permitir al usuario ingresar un texto en español mediante un formulario web y obtener como resultado la representación en Braille Grado 1 (estándar ONCE B2), visualizada como cuadratines en pantalla. La lógica de conversión implementada en `textoABraille()` incluye:
+El caso de uso principal de la aplicación *Traductor Braille* consiste en permitir al usuario ingresar un texto en español mediante un formulario web y obtener como resultado la representación en Braille Grado 1 (estándar ONCE B2), visualizada con y sin cuadratines en pantalla. La lógica de conversión implementada en `textoABraille()` incluye:
 
 - Convertir letras minúsculas del alfabeto español
 - Manejar mayúsculas individuales y palabras completas en mayúsculas
@@ -17,10 +17,8 @@ El caso de uso principal de la aplicación *Traductor Braille* consiste en permi
 - Reconocer la letra ñ
 - Convertir números con el prefijo de número antepuesto
 - Preservar los espacios tal como aparecen (sin normalización automática)
-- Reemplazar caracteres no soportados con celdas de tipo `unknown`
 
-La siguiente sección documenta los 14 casos de prueba empleados para validar el funcionamiento del módulo `brailleTranslator.js`.
-
+La siguiente sección documenta los 15 casos de prueba empleados para validar el funcionamiento del módulo `brailleTranslator.js`.
 
 ---
 
@@ -36,7 +34,8 @@ Verificar que el módulo textoABraille() traduzca correctamente texto básico en
 - **Entrada:** `hola mundo`
 - **Resultado esperado:** La salida debe contener celdas braille válidas, incluir espacios y no presentar caracteres desconocidos.
 - **Resultado obtenido:** PASS sin errores.
-![alt text](image-2.png)
+<img width="1309" height="799" alt="image" src="https://github.com/user-attachments/assets/5f66da1b-7594-457d-a36a-ce9a1fe83532" />
+
 
 ### Prueba funcional de interfaz
 - **Entrada:** `hola mundo`
@@ -47,8 +46,8 @@ Verificar que el módulo textoABraille() traduzca correctamente texto básico en
 4. Verificar la representación braille generada.
 - **Resultado esperado:** El sistema debe mostrar correctamente la representación braille correspondiente al texto ingresado.
 - **Resultado obtenido:** La interfaz generó correctamente los cuadratines braille sin errores visuales ni caracteres desconocidos.
-![alt text](image-1.png)
-![alt text](image-9.png)
+<img width="963" height="801" alt="image" src="https://github.com/user-attachments/assets/eaa57314-0bdc-41aa-8259-75ebff58b58f" />
+<img width="925" height="416" alt="image" src="https://github.com/user-attachments/assets/f9d30e4b-fa36-4135-bb6b-80c614ab99d5" />
 
 ---
 
@@ -59,7 +58,7 @@ Verificar que una sola letra mayúscula genere el prefijo May. una única vez an
 - **Entrada:** `Casa`
 - **Resultado esperado:** Primera celda con special:"mayúscula" y mayusculaDoble: undefined,seguida de la celda de "c".
 - **Resultado obtenido:** PASS sin errores.
-![alt text](image-3.png)
+<img width="1330" height="904" alt="Captura de pantalla 2026-05-28 134552" src="https://github.com/user-attachments/assets/03742bf7-dda3-4204-8ff3-d67d9248a532" />
 
 ### Prueba funcional de interfaz
 - **Entrada:** `Casa`
@@ -70,8 +69,8 @@ Verificar que una sola letra mayúscula genere el prefijo May. una única vez an
 - **Resultado esperado:** Un cuadratín may. seguido de c, a, s, a.
 - **Resultado obtenido:** La interfaz mostró correctamente 
   may. | c | a | s | a.
-![alt text](image-4.png)
-![alt text](image-8.png)
+<img width="921" height="769" alt="Captura de pantalla 2026-05-28 141440" src="https://github.com/user-attachments/assets/fe6456f4-9326-4bf6-889f-85823ee93ea3" />
+<img width="935" height="411" alt="image" src="https://github.com/user-attachments/assets/f59e21fc-225f-48b4-9d8e-b05d31dc52e1" />
 
 ---
 
@@ -85,7 +84,8 @@ indicador may.×2 al inicio de la secuencia.
 - **Resultado esperado:** Primera celda con mayusculaDoble: true, 
   seguida de h, o, l, a.
 - **Resultado obtenido:** PASS sin errores.
-![alt text](image-5.png)
+  <img width="1343" height="895" alt="Captura de pantalla 2026-05-28 141801" src="https://github.com/user-attachments/assets/da3b5db4-e3ec-4b99-b8c9-1fc7fbfb0cec" />
+
 
 ### Prueba funcional de interfaz
 - **Entrada:** `HOLA`
@@ -96,8 +96,9 @@ indicador may.×2 al inicio de la secuencia.
 - **Resultado esperado:** Un bloque may.×2 seguido de h, o, l, a.
 - **Resultado obtenido:** La interfaz mostró correctamente 
   el indicador doble agrupado en recuadro azul.
-![alt text](image-6.png)
-![alt text](image-7.png)
+<img width="1159" height="925" alt="Captura de pantalla 2026-05-28 141905" src="https://github.com/user-attachments/assets/ea39ac38-f7aa-49b0-9c37-1964cc492c78" />
+<img width="920" height="396" alt="image" src="https://github.com/user-attachments/assets/1a3e3ceb-81a5-4c0d-9bf1-d8e4cb47d789" />
+
 ---
 
 ## Caso de Prueba 4: Transcripción de vocales acentuadas
@@ -108,7 +109,7 @@ Verificar que las vocales con tilde se conviertan a sus celdas Braille específi
 - **Entrada:** `áéíóú`
 - **Resultado esperado:**  Celdas braille válidas para cada vocal acentuada, sin caracteres desconocidos.
 - **Resultado obtenido:** PASS sin errores.
-![alt text](image-12.png)
+<img width="1370" height="787" alt="Captura de pantalla 2026-05-28 143243" src="https://github.com/user-attachments/assets/be4e180a-1c2d-42b5-a6c6-3af5d01010d4" />
 
 ### Prueba funcional de interfaz
 - **Entrada:** `áéíóú`
@@ -119,8 +120,8 @@ Verificar que las vocales con tilde se conviertan a sus celdas Braille específi
 - **Resultado esperado:** 5 cuadratines braille sin advertencias.
 - **Resultado obtenido:** Se tradujo correctamente las vocales con acento. 
   sin caracteres desconocidos.
-![alt text](image-10.png)
-![alt text](image-11.png)
+<img width="931" height="796" alt="image" src="https://github.com/user-attachments/assets/0d8d3ae0-e6d5-40c7-ad90-3882a4843387" />
+<img width="938" height="426" alt="image" src="https://github.com/user-attachments/assets/c193eebc-5f84-4b68-93ab-e50760e75d3d" />
 
 ----
 ## Caso de Prueba 5: Transcripción completa del alfabeto español
@@ -131,7 +132,8 @@ Verificar que todas las letras del alfabeto español sean reconocidas y traducid
 * **Entrada:** `abcdefghijklmnñopqrstuvwxyz`
 * **Resultado esperado:** Todas las letras deben generar celdas braille válidas sin caracteres desconocidos.
 * **Resultado obtenido:** PASS sin errores.
-![alt text](image-21.png)
+<img width="1380" height="953" alt="Captura de pantalla 2026-05-28 171135" src="https://github.com/user-attachments/assets/d2238eb2-20cd-46e2-8b4b-1d4ad4b4a0b1" />
+
 
 ### Prueba funcional de interfaz
 * **Entrada:** `abcdefghijklmnñopqrstuvwxyz`
@@ -143,7 +145,9 @@ Verificar que todas las letras del alfabeto español sean reconocidas y traducid
   El sistema debe mostrar un cuadratín braille válido para cada letra del alfabeto español, incluida la letra ñ.
 * **Resultado obtenido:**
   La interfaz representó correctamente todas las letras del alfabeto sin advertencias ni caracteres desconocidos.
-  ![alt text](image-18.png)
+<img width="938" height="857" alt="image" src="https://github.com/user-attachments/assets/8a1139da-7873-467e-b482-8455be4e23e8" />
+<img width="945" height="487" alt="image" src="https://github.com/user-attachments/assets/aa431788-f925-461c-a744-44e74e97354b" />
+
 ---
 
 ## Caso de Prueba 6: Transcripción de la vocal ü
@@ -153,10 +157,9 @@ Verificar que la vocal `ü` sea reconocida y traducida correctamente a Braille.
 * **Entrada:** `pingüino`
 * **Resultado esperado:** La palabra debe traducirse completamente sin caracteres desconocidos, incluyendo la vocal `ü`.
 * **Resultado obtenido:** PASS sin errores.
-![alt text](image-22.png)
+<img width="1350" height="720" alt="Captura de pantalla 2026-05-28 171211" src="https://github.com/user-attachments/assets/c66a1bc2-4aec-4eb9-a00d-519c06e092e8" />
 
 ### Prueba funcional de interfaz
-
 * **Entrada:** `pingüino`
 * **Procedimiento:**
   1. Ingresar `pingüino` en el área de texto.
@@ -166,8 +169,9 @@ Verificar que la vocal `ü` sea reconocida y traducida correctamente a Braille.
   Todos los caracteres deben representarse correctamente en braille sin advertencias visuales.
 * **Resultado obtenido:**
   La interfaz tradujo correctamente la palabra `pingüino`, incluyendo la vocal `ü`.
-![alt text](image-19.png)
-![alt text](image-20.png)
+<img width="916" height="790" alt="image" src="https://github.com/user-attachments/assets/dff0f44d-8049-4378-8ef1-b1a9f94343f0" />
+<img width="914" height="396" alt="image" src="https://github.com/user-attachments/assets/07c7d529-24a5-4d30-95d4-ccbf8813a3cd" />
+
 ---
 
 ## Caso de Prueba 7: Transcripción de signos de puntuación
@@ -177,7 +181,7 @@ Verificar que distintos signos de puntuación y símbolos del español se traduz
 * **Entrada:** `"Hola, mundo; ¿cómo estás? ¡Bien!"`
 * **Resultado esperado:** Todos los signos de puntuación deben generar celdas braille válidas sin producir caracteres desconocidos.
 * **Resultado obtenido:** PASS sin errores.
-![alt text](image-23.png)
+<img width="1410" height="962" alt="Captura de pantalla 2026-05-28 171406" src="https://github.com/user-attachments/assets/a6c5ca2b-f1d4-4448-98dd-7da83b445fef" />
 
 ### Prueba funcional de interfaz
 * **Entrada:**`"Hola, mundo; ¿cómo estás? ¡Bien!"`
@@ -188,8 +192,8 @@ Verificar que distintos signos de puntuación y símbolos del español se traduz
 * **Resultado esperado:** La interfaz debe representar correctamente comillas, coma, punto y coma, signos de interrogación y signos de exclamación.
 * **Resultado obtenido:**
   La interfaz generó correctamente todos los signos de puntuación sin advertencias ni caracteres desconocidos.
-![alt text](image-24.png)
-![alt text](image-25.png)
+<img width="1024" height="867" alt="Captura de pantalla 2026-05-28 171458" src="https://github.com/user-attachments/assets/fa96f7c0-2f5d-41ca-bf2c-316edae7efec" />
+<img width="976" height="866" alt="Captura de pantalla 2026-05-28 171510" src="https://github.com/user-attachments/assets/c35a11b3-bbfe-4ae9-bd7c-36e410a2f97b" />
 
 ---
 
@@ -200,7 +204,7 @@ Verificar que el sistema traduzca correctamente los números del 0 al 9 utilizan
 - **Entrada:**  `0123456789`
 - **Resultado esperado:** La primera celda debe corresponder al indicador numérico (`#`) y los diez dígitos deben generar celdas Braille válidas sin caracteres desconocidos.
 - **Resultado obtenido:** PASS sin errores.
-![alt text](image-26.png)
+<img width="1411" height="929" alt="Captura de pantalla 2026-05-28 173105" src="https://github.com/user-attachments/assets/f055948f-296d-4751-8cec-73f8fca7b4f8" />
 
 ### Prueba funcional de interfaz
 - **Entrada:**  `0123456789`
@@ -212,8 +216,9 @@ Verificar que el sistema traduzca correctamente los números del 0 al 9 utilizan
 La interfaz debe mostrar correctamente el indicador numérico Braille seguido de las representaciones correspondientes de los números del 0 al 9.
 - **Resultado obtenido:**  
 La interfaz generó correctamente el prefijo numérico y todos los dígitos sin errores visuales ni caracteres desconocidos.
-![alt text](image-27.png)
-![alt text](image-28.png)
+<img width="957" height="949" alt="Captura de pantalla 2026-05-28 173137" src="https://github.com/user-attachments/assets/bb0235ac-2283-4f78-a7e9-60c797147355" />
+<img width="945" height="399" alt="Captura de pantalla 2026-05-28 173158" src="https://github.com/user-attachments/assets/6ff33de2-1d48-49f0-8f0c-984e7b45fd5a" />
+
 ---
 ## Caso de Prueba 9: Transcripción de operadores matemáticos básicos
 ### Objetivo
@@ -222,12 +227,10 @@ Verificar que los operadores matemáticos básicos (`+`, `*`, `/`) sean reconoci
 * **Entrada:** `(3 + 5) * 2 - 4 / 2`
 * **Resultado esperado:** Todos los operadores matemáticos deben generar celdas braille válidas sin caracteres desconocidos.
 * **Resultado obtenido:** La prueba falló debido a que el sistema no reconoció correctamente tres operadores matemáticos presentes en la expresión.
-![alt text](image-30.png)
+<img width="1372" height="725" alt="Captura de pantalla 2026-05-28 174425" src="https://github.com/user-attachments/assets/95a02d13-6866-46f4-8861-de2f387375a7" />
 ### Análisis del fallo
 Durante la ejecución inicial se identificó que los operadores matemáticos +, * y / no estaban definidos dentro del objeto SIGNOS en el archivo datos-braille.js.
-
 Como consecuencia, el traductor clasificaba estos símbolos como caracteres desconocidos y los resaltaba visualmente en amarillo dentro de la interfaz.
-
 ### Corrección aplicada
 Se agregaron los operadores faltantes al objeto SIGNOS en datos-braille.js:
 + → pattern(2, 3, 5)
@@ -237,7 +240,8 @@ Se agregaron los operadores faltantes al objeto SIGNOS en datos-braille.js:
 ### Re-ejecución posterior a la corrección
 * **Resultado esperado:** Todos los operadores matemáticos deben traducirse correctamente sin generar advertencias.
 * **Resultado obtenido:** La prueba se ejecutó correctamente y todos los operadores matemáticos fueron reconocidos y traducidos a Braille sin errores.
-![alt text](image-29.png)
+<img width="1365" height="594" alt="Captura de pantalla 2026-05-28 175541" src="https://github.com/user-attachments/assets/ef69192f-9b7b-4e88-9683-b0a9739198b0" />
+
 ### Prueba funcional de interfaz
 * **Entrada:** `(3 + 5) * 2 - 4 / 2`
 * **Procedimiento:**
@@ -248,8 +252,8 @@ Se agregaron los operadores faltantes al objeto SIGNOS en datos-braille.js:
   Todos los operadores matemáticos deben visualizarse como cuadratines Braille válidos sin advertencias ni resaltados amarillos.
 * **Resultado obtenido:**
   La interfaz representó correctamente los operadores `+`, `*` y `/` después de aplicar la corrección en el módulo de signos.
-  ![alt text](image-31.png)
-  ![alt text](image-32.png)
+<img width="906" height="847" alt="Captura de pantalla 2026-05-28 175639" src="https://github.com/user-attachments/assets/ccb88145-fbe4-4048-8174-6560cb00a1ee" />
+<img width="930" height="438" alt="Captura de pantalla 2026-05-28 175704" src="https://github.com/user-attachments/assets/8a86b7e2-4b3e-43d4-95ae-b309cf1b3904" />
 ---
 
 ## Caso de Prueba 10: Fecha con guiones
@@ -261,7 +265,8 @@ Verificar que una fecha en formato DD-MM-YYYY  se traduzca correctamente con pre
 - **Resultado esperado:** desconocidos === 0, 
   celdas válidas con guiones entre números.
 - **Resultado obtenido:** PASS
-![alt text](image-52.png)
+<img width="1402" height="616" alt="Captura de pantalla 2026-05-28 191028" src="https://github.com/user-attachments/assets/84c2560a-4afd-43e7-a6b7-a6597a84c6da" />
+
 ### Prueba funcional de interfaz
 - **Entrada:** `25-11-2025`
 - **Procedimiento:**
@@ -270,11 +275,11 @@ Verificar que una fecha en formato DD-MM-YYYY  se traduzca correctamente con pre
   3. Verificar prefijos # y guiones correctos.
 - **Resultado esperado:** # 2 5 - # 1 1 - # 2 0 2 5
 - **Resultado obtenido:** La interfaz generó correctamente la fecha con guiones.
-![alt text](image-34.png)
-![alt text](image-35.png)
+<img width="918" height="780" alt="Captura de pantalla 2026-05-28 180738" src="https://github.com/user-attachments/assets/3b9c187e-b9f9-4587-8d25-3248753ebaa3" />
+<img width="931" height="410" alt="Captura de pantalla 2026-05-28 180751" src="https://github.com/user-attachments/assets/f289b37e-0f67-40f2-a167-821829bc8615" />
+---
 
 ## Caso de Prueba 11: Palabra con vocal acentuada í
-
 ### Objetivo
 Verificar que la palabra "sandía" con la vocal 
 í acentuada se traduzca correctamente.
@@ -283,7 +288,7 @@ Verificar que la palabra "sandía" con la vocal
 - **Resultado esperado:** 6 celdas, 
   desconocidos === 0.
 - **Resultado obtenido:** PASS
-![alt text](image-53.png)
+<img width="1368" height="628" alt="Captura de pantalla 2026-05-28 191122" src="https://github.com/user-attachments/assets/640af886-896a-4431-8b04-9d2136dad07f" />
 
 ### Prueba funcional de interfaz
 - **Entrada:** `sandía`
@@ -294,8 +299,8 @@ Verificar que la palabra "sandía" con la vocal
 - **Resultado esperado:** s|a|n|d|í|a sin errores.
 - **Resultado obtenido:** La interfaz generó 
   correctamente los 6 cuadratines.
-![alt text](image-37.png)
-![alt text](image-38.png)
+<img width="930" height="773" alt="Captura de pantalla 2026-05-28 181119" src="https://github.com/user-attachments/assets/fa80a0a4-3791-49ee-81de-6f413f5a82b7" />
+<img width="943" height="421" alt="Captura de pantalla 2026-05-28 181129" src="https://github.com/user-attachments/assets/7399d1f1-6422-4851-9e42-a9b6b3a5c1e2" />
 
 ---
 ## Caso de Prueba 12: Siglas con mayúsculas y guión
@@ -308,7 +313,8 @@ consecutivas y guión se traduzcan correctamente.
 - **Resultado esperado:** Primera celda con 
   mayusculaDoble: true, desconocidos === 0.
 - **Resultado obtenido:** PASS
-![alt text](image-54.png)
+<img width="1387" height="620" alt="Captura de pantalla 2026-05-28 191215" src="https://github.com/user-attachments/assets/575a57fc-2744-4db5-a42a-4af355734e60" />
+
 ### Prueba funcional de interfaz
 - **Entrada:** `FIS-EPN`
 - **Procedimiento:**
@@ -319,8 +325,9 @@ consecutivas y guión se traduzcan correctamente.
 - **Resultado esperado:** may.×2 | f | i | s | 
   - | may.×2 | e | p | n
 - **Resultado obtenido:** La interfaz mostró correctamente los indicadores dobles.
-![alt text](image-40.png)
-![alt text](image-41.png)
+<img width="950" height="822" alt="Captura de pantalla 2026-05-28 182711" src="https://github.com/user-attachments/assets/e7386486-98b1-4469-8290-fa8c96168298" />
+<img width="927" height="414" alt="image" src="https://github.com/user-attachments/assets/06e811f4-e489-4c26-9b12-950e7b97ee12" />
+---
 
 ## Caso de Prueba 13: Número con coma decimal
 
@@ -330,7 +337,7 @@ Verificar que un número con coma decimal como 20,15 no genere un prefijo # dobl
 - **Entrada:** `20,15`
 - **Resultado esperado:** El prefijo numérico # aparece solo una vez al inicio del número.
 - **Resultado obtenido:** El prefijo # apareció dos veces, una antes del 20 y otra antes del 15, lo que no corresponde al estándar Braille español por loq eu la prueba falló.
-![alt text](image-42.png)
+<img width="1348" height="970" alt="Captura de pantalla 2026-05-28 183105" src="https://github.com/user-attachments/assets/060dc4a6-9c85-4bcc-8ca3-09616eed6238" />
 
 ### Análisis del fallo
 Al encontrar la coma, el traductor interpretaba que la secuencia numérica había terminado. Cuando llegaba al dígito 1 después de la coma, lo trataba como el inicio de un número nuevo y añadía otro prefijo #. Sin embargo en Braille español, la coma entre dígitos actúa como separador decimal y los números que siguen pertenecen a la misma secuencia,por lo que no deben llevar un nuevo prefijo.
@@ -341,7 +348,8 @@ Se modificó la lógica en traductor-base.js para detectar cuando una coma está
 - **Resultado obtenido:** El prefijo numérico 
   aparece solo una vez al inicio, quedando la 
   traducción como # | 2 | 0 | , | 1 | 5.
-![alt text](image-55.png)
+<img width="1439" height="651" alt="Captura de pantalla 2026-05-28 191324" src="https://github.com/user-attachments/assets/76e6a75f-c170-48bb-9abb-59fea96637c0" />
+
 ### Prueba funcional de interfaz
 - **Entrada:** `20,15`
 - **Procedimiento:**
@@ -353,11 +361,12 @@ Se modificó la lógica en traductor-base.js para detectar cuando una coma está
 - **Resultado esperado:** El número se traduce como una sola secuencia: # | 2 | 0 | , | 1 | 5
   sin ningún prefijo # adicional en el medio.
 - **Resultado obtenido (inicial):** La interfaz generó dos prefijos #, uno antes del 20 y otro  antes del 15, como se puede observar en la captura de pantalla.
-![alt text](image-45.png)
+<img width="1245" height="992" alt="Captura de pantalla 2026-05-28 184010" src="https://github.com/user-attachments/assets/413327d1-992f-4159-ba4c-25b4866f7dfc" />
 - **Resultado obtenido (tras corrección):** 
   La interfaz generó correctamente una sola 
   secuencia numérica sin prefijo doble.
-![alt text](image-44.png)
+<img width="1172" height="980" alt="Captura de pantalla 2026-05-28 183829" src="https://github.com/user-attachments/assets/a0b5ac8e-c04c-4a15-adb1-c8d7e19ea0f8" />
+<img width="948" height="424" alt="image" src="https://github.com/user-attachments/assets/1bbb791f-31c2-498b-a8eb-e0ccb6117cc8" />
 
 ---
 ## Caso de Prueba 14: Número con punto decimal
@@ -369,8 +378,7 @@ Verificar que un número con punto decimal como `46.37` mantenga una sola secuen
 
 * **Resultado esperado:** El prefijo numérico `#` debe aparecer únicamente una vez al inicio del número decimal.
 * **Resultado obtenido:** La prueba se ejecutó correctamente y el sistema mantuvo una sola secuencia numérica sin insertar un segundo prefijo `#` después del punto decimal.
-
-![alt text](image-56.png)
+<img width="1399" height="674" alt="Captura de pantalla 2026-05-28 191423" src="https://github.com/user-attachments/assets/a7dc2b92-e503-4772-a53c-10497bdd6c2a" />
 
 ### Análisis
 Tras la corrección aplicada anteriormente para mantener el modo numérico activo en secuencias decimales, el traductor logró interpretar correctamente el punto decimal como parte de la misma secuencia numérica.
@@ -388,9 +396,9 @@ De esta manera, los dígitos posteriores al punto continuaron perteneciendo al m
   `# | 4 | 6 | . | 3 | 7`
 * **Resultado obtenido:**
   La interfaz generó correctamente una sola secuencia numérica continua sin prefijos duplicados después del punto decimal.
+<img width="937" height="803" alt="image" src="https://github.com/user-attachments/assets/c11cf88b-be45-40ef-964f-3e18692c79b0" />
+<img width="919" height="430" alt="image" src="https://github.com/user-attachments/assets/ae68145e-e7bd-4dc4-8af7-290892bb41fa" />
 
-![alt text](image-47.png)
-![alt text](image-48.png)
 ---
 ## Caso de Prueba 15: Manejo de múltiples espacios consecutivos
 ### Objetivo
@@ -400,7 +408,7 @@ Verificar que múltiples espacios consecutivos se mantengan correctamente en la 
 - **Entrada:** `hola     mundo` (5 espacios)
 - **Resultado esperado:** La salida debe contener múltiples celdas de tipo `space` entre las palabras, manteniendo la separación original del texto.
 - **Resultado obtenido:** PASS — los espacios fueron procesados correctamente sin errores.
-![alt text](image-57.png)
+<img width="1309" height="799" alt="Captura de pantalla 2026-05-28 191524" src="https://github.com/user-attachments/assets/0749a5df-fab2-41b6-b495-92715ebd4611" />
 
 ### Prueba funcional de interfaz
 - **Entrada:** `hola     mundo`
@@ -412,7 +420,7 @@ Verificar que múltiples espacios consecutivos se mantengan correctamente en la 
 - **Resultado esperado:** La interfaz debe mostrar una separación visible equivalente a los espacios ingresados, sin eliminar ni colapsar espacios.
 
 - **Resultado obtenido:** La interfaz mantuvo correctamente la separación entre palabras y representó los espacios sin alterar el formato original del texto.
+<img width="921" height="794" alt="image" src="https://github.com/user-attachments/assets/84886ffc-882f-4312-9f9f-ce6ec576d012" />
+<img width="947" height="772" alt="image" src="https://github.com/user-attachments/assets/14c4ff84-84b1-4876-a220-929fab234d09" />
 
-![alt text](image-50.png)
-![alt text](image-51.png)
 ---
