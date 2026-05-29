@@ -89,6 +89,9 @@ export const SIGNOS = {
   "»": pattern(2, 3, 6),
   "(": pattern(1, 2, 6),
   ")": pattern(3, 4, 5),
+  "+": pattern(2, 3, 5),
+  "*": pattern(1, 6),
+  "/": pattern(3, 4),
 };
 
 /** Mapa de dígitos decimales 0–9 a letras braille (tras el prefijo numérico). */
