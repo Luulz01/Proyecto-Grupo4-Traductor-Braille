@@ -20,7 +20,7 @@ Para gestionar los cambios realizados en el proyecto se utilizó Git. Esta herra
 El uso de Git ayudó también a mantener distintas versiones del proyecto y resolver conflictos cuando varios miembros trabajaban sobre archivos similares. Gracias a esto, el equipo pudo desarrollar funcionalidades de manera paralela sin afectar la estabilidad del sistema principal.
 
 
-## GitHub para el trabajo colaborativo
+## GitHub
 
 El repositorio del proyecto fue alojado en GitHub, plataforma que permitió almacenar el código de forma remota y centralizar el trabajo colaborativo del equipo.
 
@@ -65,19 +65,20 @@ La rama principal utilizada fue:
 
 - `main` → contiene únicamente versiones estables y funcionales del proyecto.
 
-Cada integrante desarrolló nuevas funcionalidades o correcciones en ramas independientes creadas a partir de la rama principal.
+Cada integrante trabajó en ramas independientes denominadas `feature`, desarrollando módulos específicos del sistema antes de integrarlos a la rama principal.
 
 Para el desarrollo colaborativo del proyecto se aplicó la metodología GitHub Flow, la cual permite organizar el trabajo del equipo mediante ramas independientes, evitando modificaciones directas sobre la rama principal.
 
 El flujo aplicado fue:
 
 1. Clonar el repositorio desde GitHub.
-2. Acceder a la rama correspondiente.
-3. Actualizar cambios mediante git pull.
-4. Realizar modificaciones.
-5. Guardar cambios con git add y git commit.
-6. Subir cambios mediante git push.
-7. Integrar cambios a la rama principal una vez validados.
+2. Crear una rama `feature` a partir de `main`.
+3. Actualizar cambios mediante `git pull`.
+4. Desarrollar funcionalidades de manera independiente.
+5. Registrar cambios usando `git add` y `git commit`.
+6. Subir cambios mediante `git push`.
+7. Validar funcionamiento del módulo.
+8. Integrar cambios hacia `main` mediante merge.
 
 Este flujo permitió mantener estabilidad en el proyecto y trabajo simultáneo entre integrantes.
 
@@ -85,6 +86,12 @@ Este flujo permitió mantener estabilidad en el proyecto y trabajo simultáneo e
 # Estrategia de ramificación - GitHub Flow
 
 Para mantener un mejor control del desarrollo y evitar conflictos en el código, se aplicó una estrategia de ramificación basada en GitHub Flow. Utilizando una rama principal y ramas auxiliares para documentación y desarrollo.
+
+Se trabajó utilizando:
+
+- Una rama principal (`main`)
+- Una rama de documentación (`documentacion`)
+- Varias ramas `feature` para funcionalidades específicas
 
 ## Estructura de ramas utilizada
 
@@ -96,56 +103,126 @@ main
 │
 ├── documentacion
 │
-├── feature/abecedario
-├── feature/numeros-signos
-├── feature/acentos-validacion
+├── feature/datos-braille
+├── feature/traductor-base
 ├── feature/senaletica
-└── feature/interfaz-pruebas
+├── feature/interfaz
+└── feature/styles
 ```
+
+![alt text]({DE9CB490-88B3-40C6-B2E3-0CF1DAF9EE23}.png)
 
 
 ## Descripción de ramas
 
-### `main`
+## `main`
 
 Contiene la versión estable y funcional del sistema.
 
 
-### `documentacion`
+## `documentacion`
 
 Contiene toda la documentación técnica y funcional del proyecto:
 
-* Diseño arquitectónico
-* Ambiente de desarrollo / Ramificación
-* Documentación técnica
-* Casos de prueba
-* Manual de usuario
+- Ambiente de desarrollo
+- Estrategia de ramificación
+- Diseño arquitectónico
+- Manual de usuario
+- Casos de prueba
+- Documentación técnica
 
 
-### Ramas `feature`
+# Ramas `feature`
 
-Cada integrante desarrolló una funcionalidad específica de manera independiente:
+Cada rama fue utilizada para desarrollar módulos independientes del sistema.
 
-* **feature/abecedario:** Traducción del alfabeto braille
-* **feature/numeros-signos:** Conversión de números y signos básicos
-* **feature/acentos-validacion:** Soporte para vocales acentuadas y validación de entradas
-* **feature/senaletica:** Generación visual de señalética braille
-* **feature/interfaz-pruebas:** Interfaz gráfica y validaciones funcionales
+## `feature/datos-braille`
+
+Contiene las estructuras y patrones braille del sistema:
+
+- Letras
+- Números
+- Signos
+- Vocales acentuadas
+- Símbolos especiales
 
 
+## `feature/traductor-base`
 
-# Justificación de la estrategia
+Implementa la lógica principal de traducción de texto español hacia braille.
 
-Se seleccionó **GitHub Flow** debido a su simplicidad, facilidad de integración y control eficiente del trabajo colaborativo.
+
+## `feature/senaletica`
+
+Desarrolla la generación visual e impresión de señalética braille accesible.
+
+
+## `feature/interfaz`
+
+Gestiona la interacción del usuario, eventos de la interfaz y conexión entre módulos del sistema.
+
+
+## `feature/frontend`
+
+Contiene la estructura visual desarrollada con HTML y CSS para la interfaz gráfica del proyecto.
+
+
+![alt text](image.png)
+
+
+# Integración de módulos
+
+Debido a la dependencia funcional entre componentes, las ramas fueron integradas progresivamente siguiendo un orden lógico.
+
+El flujo de integración aplicado fue:
+
+```plaintext
+feature/datos-braille
+↓
+feature/traductor-base
+↓
+feature/senaletica
+↓
+feature/interfaz
+↓
+feature/styles
+```
+
+Esto permitió integrar primero la lógica base del sistema y posteriormente las capas visuales e interacción de usuario.
+
+![alt text]({2814EFFD-3072-4D40-9490-588A9526956C}.png)
+
+
+# Validación mediante pruebas
+
+Para verificar el correcto funcionamiento del sistema se realizaron pruebas automatizadas utilizando Jest y Node.js.
+
+Durante las pruebas se detectó inicialmente un problema relacionado con operadores matemáticos (`+`, `*`, `/`), los cuales eran identificados como caracteres desconocidos por el traductor.
+
+![alt text]({6BA2AA19-9B12-4B29-B708-015D5CE5E2E7}.png)
+
+
+Posteriormente el problema fue corregido agregando soporte para dichos signos en el módulo correspondiente.
+
+Finalmente se obtuvo una ejecución exitosa de los 15 casos de prueba definidos para el proyecto.
+
+![alt text]({C8B85ED8-59CA-495C-97DC-67E8B6CD1B72}.png)
+
+
+# Justificación de la estrategia utilizada
+
+La metodología GitHub Flow fue seleccionada debido a su simplicidad y facilidad para el trabajo colaborativo.
 
 Esta estrategia permitió:
 
-* Separar funcionalidades por integrante.
-* Evitar conflictos de sobrescritura.
-* Mantener la estabilidad de la rama principal.
-* Llevar trazabilidad de cambios.
+- Separar funcionalidades por integrante.
+- Mantener control de cambios.
+- Evitar sobrescritura de código.
+- Integrar módulos de forma segura.
+- Validar funcionalidades antes de llegar a `main`.
+- Mantener estabilidad en el sistema principal.
 
 
 # Resultado obtenido
 
-La estrategia permitió desarrollar el sistema de forma ordenada, colaborativa y controlada, garantizando una correcta evolución del software y cumplimiento de los objetivos establecidos para el proyecto.
+La estrategia de desarrollo aplicada permitió construir el sistema de manera modular, organizada y colaborativa. El uso de ramas independientes, integración progresiva y validación mediante pruebas permitió mantener estabilidad.
