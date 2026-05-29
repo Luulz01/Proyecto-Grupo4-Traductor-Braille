@@ -168,7 +168,8 @@ Gestiona la interacción del usuario, eventos de la interfaz y conexión entre m
 Contiene la estructura visual desarrollada con HTML y CSS para la interfaz gráfica del proyecto.
 
 
-![alt text](image.png)
+<img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/b9007f6a-27a1-4093-b1dc-325a1fc0841d" />
+
 
 
 # Integración de módulos
@@ -191,7 +192,8 @@ feature/styles
 
 Esto permitió integrar primero la lógica base del sistema y posteriormente las capas visuales e interacción de usuario.
 
-![alt text]({2814EFFD-3072-4D40-9490-588A9526956C}.png)
+<img width="1686" height="930" alt="{0DC9BA0F-1B09-4778-8215-3F97D75388AA}" src="https://github.com/user-attachments/assets/a50bf8ad-c286-45a5-bc14-63ca2db3417c" />
+
 
 
 # Validación mediante pruebas
@@ -200,14 +202,16 @@ Para verificar el correcto funcionamiento del sistema se realizaron pruebas auto
 
 Durante las pruebas se detectó inicialmente un problema relacionado con operadores matemáticos (`+`, `*`, `/`), los cuales eran identificados como caracteres desconocidos por el traductor.
 
-![alt text]({6BA2AA19-9B12-4B29-B708-015D5CE5E2E7}.png)
+<img width="943" height="567" alt="{EE741E99-E079-461F-99C3-4758A4529BE7}" src="https://github.com/user-attachments/assets/441d8032-46aa-4613-9748-833b2b1e2cb0" />
+
 
 
 Posteriormente el problema fue corregido agregando soporte para dichos signos en el módulo correspondiente.
 
 Finalmente se obtuvo una ejecución exitosa de los 15 casos de prueba definidos para el proyecto.
 
-![alt text]({C8B85ED8-59CA-495C-97DC-67E8B6CD1B72}.png)
+<img width="1198" height="735" alt="{B94EFF90-AB63-4624-B1A9-9076CD25E8C8}" src="https://github.com/user-attachments/assets/266b8650-e386-4a81-93b0-81b94df499c2" />
+
 
 
 # Justificación de la estrategia utilizada
