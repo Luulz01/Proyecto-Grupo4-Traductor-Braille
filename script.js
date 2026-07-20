@@ -29,6 +29,11 @@ function iniciarModoToggle() {
     btnModoBraille.classList.toggle("activo", !esTexto);
     btnModoTexto.setAttribute("aria-pressed", String(esTexto));
     btnModoBraille.setAttribute("aria-pressed", String(!esTexto));
+
+    if (!esTexto) {
+      const entradaBraille = document.getElementById("entrada-braille");
+      if (entradaBraille) entradaBraille.focus();
+    }
   }
 
   btnModoTexto.addEventListener("click", () => activarModo("texto"));

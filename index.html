@@ -121,6 +121,23 @@
         <button type="button" class="punto-braille" data-punto="6" aria-pressed="false" aria-label="Punto 6">6</button>
       </div>
 
+      <p class="ayuda-teclado">
+        También puedes usar el <strong>teclado Perkins</strong> que usan las personas ciegas:
+        <kbd>F</kbd><kbd>D</kbd><kbd>S</kbd> activan los puntos 1‑2‑3 (mano izquierda) y
+        <kbd>J</kbd><kbd>K</kbd><kbd>L</kbd> los puntos 4‑5‑6 (mano derecha).
+        <kbd>Espacio</kbd> envía el cuadratín, <kbd>Retroceso</kbd> borra y <kbd>Enter</kbd> añade un espacio.
+      </p>
+
+      <div class="teclado-perkins" role="group" aria-label="Teclado Perkins simulado: F D S J K L para los puntos 1 a 6 y Espacio para enviar la celda">
+        <button type="button" class="tecla-perkins" data-dot="1" data-key="f" aria-pressed="false" aria-label="Punto 1, tecla F">F<span class="dot-tecla">1</span></button>
+        <button type="button" class="tecla-perkins" data-dot="4" data-key="j" aria-pressed="false" aria-label="Punto 4, tecla J">J<span class="dot-tecla">4</span></button>
+        <button type="button" class="tecla-perkins" data-dot="2" data-key="d" aria-pressed="false" aria-label="Punto 2, tecla D">D<span class="dot-tecla">2</span></button>
+        <button type="button" class="tecla-perkins" data-dot="5" data-key="k" aria-pressed="false" aria-label="Punto 5, tecla K">K<span class="dot-tecla">5</span></button>
+        <button type="button" class="tecla-perkins" data-dot="3" data-key="s" aria-pressed="false" aria-label="Punto 3, tecla S">S<span class="dot-tecla">3</span></button>
+        <button type="button" class="tecla-perkins" data-dot="6" data-key="l" aria-pressed="false" aria-label="Punto 6, tecla L">L<span class="dot-tecla">6</span></button>
+        <button type="button" class="tecla-perkins tecla-enviar" data-accion="enviar" aria-label="Enviar cuadratín (Espacio)">Espacio</button>
+      </div>
+
       <div class="acciones-constructor">
         <button type="button" id="btn-anadir-celda" class="btn btn-primary">Ingresar carácter</button>
         <button type="button" id="btn-espacio-celda" class="btn btn-secondary">Espacio</button>

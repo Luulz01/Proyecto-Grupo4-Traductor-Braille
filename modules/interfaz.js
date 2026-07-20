@@ -34,6 +34,7 @@ export function iniciarApp() {
   const senaleticaImpresion = document.getElementById("senaletica-impresion");
 
   const puntosBraille = Array.from(document.querySelectorAll(".punto-braille"));
+  const teclasPerkins = Array.from(document.querySelectorAll(".tecla-perkins"));
   const btnAnadirCelda = document.getElementById("btn-anadir-celda");
   const btnEspacioCelda = document.getElementById("btn-espacio-celda");
   const btnBorrarCelda = document.getElementById("btn-borrar-celda");
@@ -225,17 +226,25 @@ export function iniciarApp() {
   // --- Traductor inverso: Braille -> Texto ---
   const puntosActivos = [false, false, false, false, false, false];
 
-  function sincronizarPunto(boton) {
-    const idx = Number(boton.dataset.punto) - 1;
-    const activo = puntosActivos[idx];
-    boton.classList.toggle("activo", activo);
-    boton.setAttribute("aria-pressed", activo ? "true" : "false");
+  function refrescarPunto(indice) {
+    const activo = puntosActivos[indice];
+    puntosBraille
+      .filter((b) => Number(b.dataset.punto) - 1 === indice)
+      .forEach((b) => {
+        b.classList.toggle("activo", activo);
+        b.setAttribute("aria-pressed", activo ? "true" : "false");
+      });
+    teclasPerkins
+      .filter((b) => Number(b.dataset.dot) - 1 === indice)
+      .forEach((b) => {
+        b.classList.toggle("activo", activo);
+        b.setAttribute("aria-pressed", activo ? "true" : "false");
+      });
   }
 
   function togglePunto(indice) {
     puntosActivos[indice] = !puntosActivos[indice];
-    const boton = puntosBraille.find((b) => Number(b.dataset.punto) - 1 === indice);
-    if (boton) sincronizarPunto(boton);
+    refrescarPunto(indice);
   }
 
   puntosBraille.forEach((boton) => {
@@ -246,22 +255,70 @@ export function iniciarApp() {
 
   function limpiarPuntos() {
     for (let i = 0; i < puntosActivos.length; i++) puntosActivos[i] = false;
-    puntosBraille.forEach(sincronizarPunto);
+    puntosBraille.forEach((b) => {
+      b.classList.remove("activo");
+      b.setAttribute("aria-pressed", "false");
+    });
+    teclasPerkins.forEach((b) => {
+      b.classList.remove("activo");
+      b.setAttribute("aria-pressed", "false");
+    });
   }
 
-  btnAnadirCelda.addEventListener("click", () => {
+  function anadirCelda() {
     if (!puntosActivos.some(Boolean)) return;
     const celda = dotsAUnicode(puntosActivos.slice());
     entradaBraille.value += celda;
     limpiarPuntos();
-  });
+  }
 
-  btnEspacioCelda.addEventListener("click", () => {
+  function anadirEspacio() {
     entradaBraille.value += " ";
-  });
+  }
+
+  btnAnadirCelda.addEventListener("click", anadirCelda);
+
+  btnEspacioCelda.addEventListener("click", anadirEspacio);
 
   btnBorrarCelda.addEventListener("click", () => {
     entradaBraille.value = entradaBraille.value.slice(0, -1);
+  });
+
+  // Teclado Perkins simulado: F D S = puntos 1-2-3, J K L = puntos 4-5-6.
+  const MAPA_TECLAS = { f: 0, d: 1, s: 2, j: 3, k: 4, l: 5 };
+
+  teclasPerkins.forEach((boton) => {
+    if (boton.dataset.accion === "enviar") {
+      boton.addEventListener("click", anadirCelda);
+      return;
+    }
+    boton.addEventListener("mousedown", (e) => e.preventDefault());
+    boton.addEventListener("click", () => {
+      togglePunto(Number(boton.dataset.dot) - 1);
+    });
+  });
+
+  entradaBraille.addEventListener("keydown", (e) => {
+    const key = e.key.toLowerCase();
+    if (Object.prototype.hasOwnProperty.call(MAPA_TECLAS, key)) {
+      e.preventDefault();
+      togglePunto(MAPA_TECLAS[key]);
+      return;
+    }
+    if (e.key === " ") {
+      e.preventDefault();
+      anadirCelda();
+      return;
+    }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      anadirEspacio();
+      return;
+    }
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      entradaBraille.value = entradaBraille.value.slice(0, -1);
+    }
   });
 
   function traducirInverso() {
