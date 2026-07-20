@@ -28,6 +28,23 @@ function dotsAUnicode(dots) {
 }
 
 /**
+ * Convierte un carácter Unicode braille (U+2800–U+283F) en un patrón de 6 puntos.
+ * Es la operación inversa de {@link dotsAUnicode}.
+ * @param {string} char - Carácter Unicode braille a decodificar.
+ * @returns {boolean[]} Array de 6 booleanos con los puntos activos.
+ */
+export function unicodeADots(char) {
+  const valor = char.codePointAt(0) - 0x2800;
+  const dots = [false, false, false, false, false, false];
+  for (let i = 0; i < 6; i++) {
+    if (valor & (1 << i)) dots[i] = true;
+  }
+  return dots;
+}
+
+export { dotsAUnicode };
+
+/**
  * Indica si un carácter corresponde a una letra que tiene representación braille.
  * @param {string} char - Carácter a evaluar.
  * @returns {boolean} Verdadero si la letra se puede traducir a braille.

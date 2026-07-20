@@ -107,3 +107,47 @@ export const DIGITOS_A_LETRA = {
   "8": "h",
   "9": "i",
 };
+
+/**
+ * Genera una clave canónica (texto) a partir de un patrón de 6 puntos.
+ * Se usa para construir y consultar el mapa inverso braille → carácter.
+ * @param {boolean[]} dots - Array de 6 booleanos con los puntos activos.
+ * @returns {string} Clave tipo "1-4-5" (puntos activos ordenados y unidos por guion).
+ */
+export function clavePatron(dots) {
+  return dots
+    .map((activo, i) => (activo ? i + 1 : 0))
+    .filter(Boolean)
+    .sort((a, b) => a - b)
+    .join("-");
+}
+
+/**
+ * Mapa inverso braille → carácter (grado 1, ONCE B2).
+ * Construido a partir de LETRAS, ACENTUADAS y SIGNOS.
+ * Varios signos comparten patrón; se resuelve la ambigüedad a favor del
+ * signo más común: '.' sobre "'", '?' sobre '¿', '!' sobre '¡', '"' sobre '«'/'»'.
+ * @type {Object<string, string>}
+ */
+export const PATRON_A_CARACTER = (() => {
+  const mapa = {};
+
+  const agregar = (tabla) => {
+    for (const [caracter, patron] of Object.entries(tabla)) {
+      if (!Array.isArray(patron)) continue;
+      mapa[clavePatron(patron)] = caracter;
+    }
+  };
+
+  agregar(LETRAS);
+  agregar(ACENTUADAS);
+  agregar(SIGNOS);
+
+  mapa[clavePatron(pattern(3))] = "."; // '.' prevalece sobre "''
+  mapa[clavePatron(pattern(2, 6))] = "?"; // '?' prevalece sobre '¿'
+  mapa[clavePatron(pattern(2, 3, 5))] = "!"; // '!' prevalece sobre '¡'
+  mapa[clavePatron(pattern(2, 3, 6))] = '"'; // '"' prevalece sobre '«'/'»'
+  mapa[clavePatron(pattern(3, 4))] = "í"; // 'í' prevalece sobre '/' (letra del alfabeto)
+
+  return mapa;
+})();

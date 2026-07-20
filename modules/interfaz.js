@@ -3,9 +3,10 @@
  * Orquesta los módulos de traducción, renderizado y señalética, y gestiona los eventos de la UI.
  */
 
-import { textoABraille, celdasAUnicodePantalla } from "./traductor-base.js";
+import { textoABraille, celdasAUnicodePantalla, celdasAUnicodeImpresion, dotsAUnicode } from "./traductor-base.js";
 import { renderizarCeldas } from "./senaletica-render.js";
 import { actualizarSenaleticaImpresion, imprimirSenaletica } from "./senaletica-impresion.js";
+import { brailleATexto } from "./traductor-inverso.js";
 
 /**
  * Inicializa la aplicación del traductor braille y enlaza todos los manejadores de eventos.
@@ -27,9 +28,23 @@ export function iniciarApp() {
   const btnVistaUnicode = document.getElementById("btn-vista-unicode");
   const accionesImpresion = document.getElementById("acciones-impresion");
   const btnImprimir = document.getElementById("btn-imprimir");
+  const radioDirectoEspejo = document.getElementById("radio-directo-espejo");
   const senaleticaTexto = document.getElementById("senaletica-texto");
   const senaleticaBraille = document.getElementById("senaletica-braille");
   const senaleticaImpresion = document.getElementById("senaletica-impresion");
+
+  const puntosBraille = Array.from(document.querySelectorAll(".punto-braille"));
+  const btnAnadirCelda = document.getElementById("btn-anadir-celda");
+  const btnEspacioCelda = document.getElementById("btn-espacio-celda");
+  const btnBorrarCelda = document.getElementById("btn-borrar-celda");
+  const entradaBraille = document.getElementById("entrada-braille");
+  const btnTraducirInverso = document.getElementById("btn-traducir-inverso");
+  const btnLimpiarInverso = document.getElementById("btn-limpiar-inverso");
+  const salidaInverso = document.getElementById("salida-inverso");
+  const estadoInverso = document.getElementById("estado-inverso");
+  const accionesImpresionInverso = document.getElementById("acciones-impresion-inverso");
+  const btnImprimirInverso = document.getElementById("btn-imprimir-inverso");
+  const radioInversoEspejo = document.getElementById("radio-inverso-espejo");
 
   if (
     !entrada ||
@@ -43,9 +58,22 @@ export function iniciarApp() {
     !btnVistaUnicode ||
     !accionesImpresion ||
     !btnImprimir ||
+    !radioDirectoEspejo ||
     !senaleticaTexto ||
     !senaleticaBraille ||
-    !senaleticaImpresion
+    !senaleticaImpresion ||
+    !btnAnadirCelda ||
+    !btnEspacioCelda ||
+    !btnBorrarCelda ||
+    !entradaBraille ||
+    !btnTraducirInverso ||
+    !btnLimpiarInverso ||
+    !salidaInverso ||
+    !estadoInverso ||
+    !accionesImpresionInverso ||
+    !btnImprimirInverso ||
+    !radioInversoEspejo ||
+    puntosBraille.length !== 6
   ) {
     console.error("Faltan elementos en el DOM.");
     return;
@@ -82,11 +110,11 @@ export function iniciarApp() {
     contador.textContent = String(entrada.value.length);
   }
 
-  function mostrarBotonImpresion(visible) {
+  function mostrarAccionesImpresion(elemento, visible) {
     if (visible) {
-      accionesImpresion.removeAttribute("hidden");
+      elemento.removeAttribute("hidden");
     } else {
-      accionesImpresion.setAttribute("hidden", "");
+      elemento.setAttribute("hidden", "");
     }
   }
 
@@ -105,7 +133,7 @@ export function iniciarApp() {
       estado.textContent = "Escribe texto y pulsa «Traducir a braille» para ver los cuadratines.";
       estado.classList.remove("has-warning");
       salidaBraille.setAttribute("aria-label", "Sin resultado");
-      mostrarBotonImpresion(false);
+      mostrarAccionesImpresion(accionesImpresion, false);
       limpiarSenaletica();
       return;
     }
@@ -150,8 +178,8 @@ export function iniciarApp() {
       "Braille generado a partir de: " + texto.slice(0, 120) + (texto.length > 120 ? "…" : "")
     );
 
-    actualizarSenaleticaImpresion(texto, celdas, elementosSenaletica);
-    mostrarBotonImpresion(true);
+    actualizarSenaleticaImpresion(texto, celdasAUnicodeImpresion(celdas), elementosSenaletica);
+    mostrarAccionesImpresion(accionesImpresion, true);
   }
 
   function limpiar() {
@@ -163,7 +191,7 @@ export function iniciarApp() {
     estado.textContent = "Escribe texto y pulsa «Traducir a braille» para ver los cuadratines.";
     estado.classList.remove("has-warning");
     salidaBraille.setAttribute("aria-label", "Representación visual en braille");
-    mostrarBotonImpresion(false);
+    mostrarAccionesImpresion(accionesImpresion, false);
     limpiarSenaletica();
     entrada.focus();
   }
@@ -182,12 +210,110 @@ export function iniciarApp() {
   btnTraducir.addEventListener("click", traducir);
   btnLimpiar.addEventListener("click", limpiar);
   btnImprimir.addEventListener("click", () =>
-    imprimirSenaletica(entrada, ultimasCeldas, elementosSenaletica)
+    imprimirSenaletica(
+      entrada.value,
+      celdasAUnicodeImpresion(ultimasCeldas),
+      elementosSenaletica,
+      radioDirectoEspejo.checked
+    )
   );
 
   window.addEventListener("afterprint", function () {
     senaleticaImpresion.setAttribute("aria-hidden", "true");
   });
+
+  // --- Traductor inverso: Braille -> Texto ---
+  const puntosActivos = [false, false, false, false, false, false];
+
+  function sincronizarPunto(boton) {
+    const idx = Number(boton.dataset.punto) - 1;
+    const activo = puntosActivos[idx];
+    boton.classList.toggle("activo", activo);
+    boton.setAttribute("aria-pressed", activo ? "true" : "false");
+  }
+
+  function togglePunto(indice) {
+    puntosActivos[indice] = !puntosActivos[indice];
+    const boton = puntosBraille.find((b) => Number(b.dataset.punto) - 1 === indice);
+    if (boton) sincronizarPunto(boton);
+  }
+
+  puntosBraille.forEach((boton) => {
+    boton.addEventListener("click", () => {
+      togglePunto(Number(boton.dataset.punto) - 1);
+    });
+  });
+
+  function limpiarPuntos() {
+    for (let i = 0; i < puntosActivos.length; i++) puntosActivos[i] = false;
+    puntosBraille.forEach(sincronizarPunto);
+  }
+
+  btnAnadirCelda.addEventListener("click", () => {
+    if (!puntosActivos.some(Boolean)) return;
+    const celda = dotsAUnicode(puntosActivos.slice());
+    entradaBraille.value += celda;
+    limpiarPuntos();
+  });
+
+  btnEspacioCelda.addEventListener("click", () => {
+    entradaBraille.value += " ";
+  });
+
+  btnBorrarCelda.addEventListener("click", () => {
+    entradaBraille.value = entradaBraille.value.slice(0, -1);
+  });
+
+  function traducirInverso() {
+    const texto = entradaBraille.value;
+
+    if (!texto.trim()) {
+      salidaInverso.textContent = "";
+      salidaInverso.setAttribute("hidden", "");
+      estadoInverso.textContent = "Compón o pega braille y pulsa «Traducir a texto».";
+      mostrarAccionesImpresion(accionesImpresionInverso, false);
+      limpiarSenaletica();
+      return;
+    }
+
+    const { texto: resultado, desconocidos } = brailleATexto(texto);
+    salidaInverso.textContent = resultado;
+    salidaInverso.removeAttribute("hidden");
+
+    let mensaje = "Traducción lista: " + resultado.length + " carácter" +
+      (resultado.length === 1 ? "" : "es") + " obtenido" +
+      (resultado.length === 1 ? "" : "s") + ".";
+    if (desconocidos > 0) {
+      mensaje += " " + desconocidos + " celda" +
+        (desconocidos === 1 ? "" : "s") + " no reconocida" +
+        (desconocidos === 1 ? "" : "s") + ".";
+    }
+    estadoInverso.textContent = mensaje;
+
+    if (resultado.trim()) {
+      actualizarSenaleticaImpresion(resultado, texto, elementosSenaletica);
+      mostrarAccionesImpresion(accionesImpresionInverso, true);
+    } else {
+      mostrarAccionesImpresion(accionesImpresionInverso, false);
+      limpiarSenaletica();
+    }
+  }
+
+  function limpiarInverso() {
+    entradaBraille.value = "";
+    limpiarPuntos();
+    salidaInverso.textContent = "";
+    salidaInverso.setAttribute("hidden", "");
+    estadoInverso.textContent = "Compón o pega braille y pulsa «Traducir a texto».";
+    mostrarAccionesImpresion(accionesImpresionInverso, false);
+    limpiarSenaletica();
+  }
+
+  btnTraducirInverso.addEventListener("click", traducirInverso);
+  btnLimpiarInverso.addEventListener("click", limpiarInverso);
+  btnImprimirInverso.addEventListener("click", () =>
+    imprimirSenaletica(salidaInverso.textContent, entradaBraille.value, elementosSenaletica, radioInversoEspejo.checked)
+  );
 
   actualizarContador();
 }

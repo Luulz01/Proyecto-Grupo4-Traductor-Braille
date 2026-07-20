@@ -14,11 +14,21 @@
   <header class="site-header">
     <div class="container">
       <h1>Traductor Braille</h1>
-      <p class="tagline">Convierte texto en español a braille y visualiza cada cuadratín de 6 puntos.</p>
+      <p class="tagline">Convierte texto en español a braille y viceversa.</p>
+
+      <div class="modo-toggle" role="group" aria-label="Modo de traducción">
+        <button type="button" id="btn-modo-texto" class="btn-modo activo" aria-pressed="true">
+          Texto a Braille
+        </button>
+        <button type="button" id="btn-modo-braille" class="btn-modo" aria-pressed="false">
+          Braille a Texto
+        </button>
+      </div>
     </div>
   </header>
 
   <main class="container" id="contenido-principal">
+    <div class="modo-panel" id="modo-panel-texto" data-modo="texto">
     <section class="panel panel-input" aria-labelledby="titulo-entrada">
       <h2 id="titulo-entrada">Texto en español</h2>
       <label for="entrada" class="visually-hidden">Escribe o pega el texto a traducir</label>
@@ -61,6 +71,16 @@
       <p id="estado-salida" class="status-text">Escribe texto y pulsa «Traducir a braille» para ver los cuadratines.</p>
 
       <div class="acciones-impresion" id="acciones-impresion" hidden>
+        <div class="modo-impresion" role="radiogroup" aria-label="Modo de impresión">
+          <label class="radio-impresion">
+            <input type="radio" name="modo-impresion-directo" id="radio-directo-estandar" value="estandar" checked>
+            Estándar (impresión plana)
+          </label>
+          <label class="radio-impresion">
+            <input type="radio" name="modo-impresion-directo" id="radio-directo-espejo" value="espejo">
+            Espejo (relieve manual con punzón)
+          </label>
+        </div>
         <button type="button" id="btn-imprimir" class="btn btn-imprimir">
           Imprimir señalética
         </button>
@@ -85,6 +105,73 @@
         </ol>
       </details>
     </section>
+    </div>
+
+    <div class="modo-panel" id="modo-panel-braille" data-modo="braille" hidden>
+    <section class="panel panel-input-inverso" aria-labelledby="titulo-inverso">
+      <h2 id="titulo-inverso">Braille → Texto</h2>
+      <p class="help-text">Introduce braille para obtener el texto en español. Puedes componerlo con los puntos o pegar caracteres Unicode braille (⠁⠃⠉…).</p>
+
+      <div class="constructor-braille" role="group" aria-label="Constructor visual de cuadratines braille">
+        <button type="button" class="punto-braille" data-punto="1" aria-pressed="false" aria-label="Punto 1">1</button>
+        <button type="button" class="punto-braille" data-punto="4" aria-pressed="false" aria-label="Punto 4">4</button>
+        <button type="button" class="punto-braille" data-punto="2" aria-pressed="false" aria-label="Punto 2">2</button>
+        <button type="button" class="punto-braille" data-punto="5" aria-pressed="false" aria-label="Punto 5">5</button>
+        <button type="button" class="punto-braille" data-punto="3" aria-pressed="false" aria-label="Punto 3">3</button>
+        <button type="button" class="punto-braille" data-punto="6" aria-pressed="false" aria-label="Punto 6">6</button>
+      </div>
+
+      <div class="acciones-constructor">
+        <button type="button" id="btn-anadir-celda" class="btn btn-primary">Ingresar carácter</button>
+        <button type="button" id="btn-espacio-celda" class="btn btn-secondary">Espacio</button>
+        <button type="button" id="btn-borrar-celda" class="btn btn-secondary">Borrar</button>
+      </div>
+
+      <label for="entrada-braille" class="visually-hidden">Texto en braille (pegar o componer)</label>
+      <textarea
+        id="entrada-braille"
+        name="entrada-braille"
+        rows="4"
+        maxlength="4000"
+        placeholder="Pega aquí caracteres braille (⠁⠃⠉…) o complétalos con el constructor de arriba."
+        aria-describedby="estado-inverso"
+      ></textarea>
+
+      <div class="meta-row">
+        <p id="estado-inverso" class="status-text" aria-live="polite">Compón o pega braille y pulsa «Traducir a texto».</p>
+        <div class="actions">
+          <button type="button" id="btn-traducir-inverso" class="btn btn-primary">
+            Traducir a texto
+          </button>
+          <button type="button" id="btn-limpiar-inverso" class="btn btn-secondary">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-output-inverso" aria-labelledby="titulo-salida-inverso" aria-live="polite" aria-atomic="true">
+      <h2 id="titulo-salida-inverso">Resultado en español</h2>
+
+      <div class="acciones-impresion" id="acciones-impresion-inverso" hidden>
+        <div class="modo-impresion" role="radiogroup" aria-label="Modo de impresión">
+          <label class="radio-impresion">
+            <input type="radio" name="modo-impresion-inverso" id="radio-inverso-estandar" value="estandar" checked>
+            Estándar (impresión plana)
+          </label>
+          <label class="radio-impresion">
+            <input type="radio" name="modo-impresion-inverso" id="radio-inverso-espejo" value="espejo">
+            Espejo (relieve manual con punzón)
+          </label>
+        </div>
+        <button type="button" id="btn-imprimir-inverso" class="btn btn-imprimir">
+          Imprimir señalética
+        </button>
+      </div>
+
+      <div id="salida-inverso" class="braille-unicode-output" role="img" aria-label="Texto en español resultante" hidden></div>
+    </section>
+    </div>
   </main>
 
   <footer class="site-footer">
