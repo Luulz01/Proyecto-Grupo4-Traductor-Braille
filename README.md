@@ -108,7 +108,3 @@ main
 
 > Nota: el teclado Perkins simulado no tiene una rama independiente; se desarrolló dentro de `feature/traductor-inverso`, junto con la traducción inversa.
 
-## Pendientes
-
-- Marcar formalmente los requisitos de la segunda iteración (CR-02-01 y CR-02-02) como implementados en el registro del proyecto.
-- Actualizar el número de versión del sistema (de v1.x a v2.0).
