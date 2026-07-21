@@ -424,3 +424,565 @@ Verificar que múltiples espacios consecutivos se mantengan correctamente en la 
 <img width="947" height="772" alt="image" src="https://github.com/user-attachments/assets/14c4ff84-84b1-4876-a220-929fab234d09" />
 
 ---
+
+
+# Casos de Prueba — Traductor Inverso (Braille → Texto)
+
+**Asignatura:** Construcción y Evolución de Software
+**Bimestre:** 2
+**Rama:** `documentacion`
+**Módulo testeado:** `traductor-inverso.js`, que depende internamente de `traductor-base.js` (conversión Unicode ↔ puntos) y de los mapas de caracteres definidos en `datos-braille.js`, por lo que los casos de prueba validan implícitamente los tres módulos.
+**Framework:** Jest
+**Comando de ejecución:** `npm test`
+
+---
+
+## Descripción general del caso de uso
+
+El caso de uso complementario de la aplicación *Traductor Braille* consiste en permitir al usuario ingresar braille (pegado como caracteres Unicode, compuesto con el constructor visual de puntos o con el teclado Perkins simulado) y obtener como resultado el texto equivalente en español. La lógica de conversión implementada en `brailleATexto()` incluye:
+
+- Convertir celdas braille a letras minúsculas del alfabeto español
+- Reconocer el indicador de mayúscula simple (una sola letra) y el indicador de mayúscula doble (palabra completa)
+- Aceptar vocales acentuadas (á, é, í, ó, ú) y la vocal ü
+- Reconocer la letra ñ
+- Convertir números a partir del prefijo numérico y distinguir una letra de la serie a–j tras un número mediante el indicador de letra-tras-número
+- Preservar espacios múltiples y saltos de línea tal como aparecen
+- **Desambiguar por contexto** las celdas que el braille grado 1 comparte entre varios caracteres (¿ / ?, ¡ / ! / +, í / /), decidiendo según la posición en la frase o el entorno numérico
+- Contar como "desconocidas" las celdas o caracteres que no pertenecen al alfabeto braille reconocido
+
+La siguiente sección documenta los 22 casos de prueba empleados para validar el funcionamiento del módulo `traductor-inverso.js`.
+
+---
+
+# Casos de Prueba y Resultados
+
+---
+
+## Caso de prueba INV-01: Texto básico en minúsculas
+
+**Objetivo**
+Verificar que una cadena braille básica en minúsculas se traduzca correctamente de vuelta a texto en español.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `hola mundo`
+* Resultado esperado: El texto decodificado debe ser idéntico al original y no debe haber celdas no reconocidas.
+* Resultado obtenido: PASS sin errores.
+
+<img width="592" height="347" alt="image" src="https://github.com/user-attachments/assets/6f2b291a-5e33-4b5b-bdcc-8d9f523e6218" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `hola mundo`
+* Procedimiento:
+   1. Abrir la aplicación web y cambiar al modo **Braille → Texto**.
+   2. Pegar en el campo de entrada el braille correspondiente a `hola mundo` (se puede obtener generándolo antes en el modo Texto → Braille, vista "Aá Unicode", y copiándolo).
+   3. Presionar **Traducir a texto**.
+   4. Verificar el resultado en el cuadro "Resultado en español".
+* Resultado esperado: El resultado debe mostrar exactamente `hola mundo`.
+* Resultado obtenido: La interfaz mostró correctamente `hola mundo` sin errores ni caracteres desconocidos.
+<img width="695" height="416" alt="image" src="https://github.com/user-attachments/assets/eb7fed3c-3bc0-4a53-ae2b-47020bfdab51" />
+---
+
+## Caso de prueba INV-02: Indicador de mayúscula simple
+
+**Objetivo**
+Verificar que el indicador de mayúscula simple afecte únicamente a la primera letra de la palabra.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `Casa`
+* Resultado esperado: El texto decodificado debe ser `Casa` (solo la "C" en mayúscula).
+* Resultado obtenido: PASS sin errores.
+<img width="599" height="276" alt="image" src="https://github.com/user-attachments/assets/bc37ec73-31b0-401b-abde-f925fe9be8d9" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `Casa`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `Casa` (indicador de mayúscula + c-a-s-a).
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `Casa`, con solo la primera letra en mayúscula.
+* Resultado obtenido: La interfaz mostró `Casa` correctamente.
+<img width="724" height="385" alt="image" src="https://github.com/user-attachments/assets/4cdedf98-4936-48af-b490-d76e511299a5" />
+---
+
+## Caso de prueba INV-03: Indicador de mayúscula doble (palabra completa)
+
+**Objetivo**
+Verificar que el indicador de mayúscula doble ponga en mayúscula toda la palabra, no solo la primera letra.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `HOLA`
+* Resultado esperado: El texto decodificado debe ser `HOLA` completo en mayúsculas.
+* Resultado obtenido: PASS sin errores.
+
+<img width="605" height="277" alt="image" src="https://github.com/user-attachments/assets/fe0f6e70-7a0b-4355-aea0-16858653e38c" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `HOLA`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `HOLA` (indicador de mayúscula doble + h-o-l-a).
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `HOLA` completo en mayúsculas.
+* Resultado obtenido: La interfaz mostró `HOLA` correctamente.
+<img width="715" height="385" alt="image" src="https://github.com/user-attachments/assets/ea2af8f9-6a3d-495a-96dd-1d33fa3ad25a" />
+---
+
+## Caso de prueba INV-04: Vocales acentuadas
+
+**Objetivo**
+Verificar que las cinco vocales acentuadas se decodifiquen correctamente.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `áéíóú`
+* Resultado esperado: El texto decodificado debe ser `áéíóú`, sin celdas desconocidas.
+* Resultado obtenido: PASS sin errores.
+
+<img width="615" height="288" alt="image" src="https://github.com/user-attachments/assets/9cff7b50-bca6-4350-bb18-968af5f4c2bc" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `áéíóú`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `áéíóú`.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `áéíóú` sin errores.
+* Resultado obtenido: La interfaz mostró las 5 vocales acentuadas correctamente.
+<img width="689" height="401" alt="image" src="https://github.com/user-attachments/assets/43cedd8b-7e7c-4f32-85dc-ef5e1c543117" />
+---
+
+## Caso de prueba INV-05: Alfabeto completo español
+
+**Objetivo**
+Verificar que las 27 letras del alfabeto español (incluida la ñ) se decodifiquen correctamente.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `abcdefghijklmnñopqrstuvwxyz`
+* Resultado esperado: El texto decodificado debe ser idéntico al original, sin celdas desconocidas.
+* Resultado obtenido: PASS sin errores.
+
+<img width="572" height="332" alt="image" src="https://github.com/user-attachments/assets/51949f9c-56ad-4217-aa62-df6c005b9f11" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `abcdefghijklmnñopqrstuvwxyz`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente al alfabeto completo.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `abcdefghijklmnñopqrstuvwxyz` completo.
+* Resultado obtenido: La interfaz mostró el alfabeto completo correctamente, incluida la ñ.
+<img width="725" height="469" alt="image" src="https://github.com/user-attachments/assets/5054ca46-c1f3-4d83-9b70-d42a6dc9c48e" />
+---
+
+## Caso de prueba INV-06: Vocal ü
+
+**Objetivo**
+Verificar que la vocal ü se decodifique correctamente dentro de una palabra.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `pingüino`
+* Resultado esperado: El texto decodificado debe ser `pingüino`, sin celdas desconocidas.
+* Resultado obtenido: PASS sin errores.
+
+<img width="605" height="377" alt="image" src="https://github.com/user-attachments/assets/b3515802-d4f7-43e2-a1ec-81116b250e3c" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `pingüino`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `pingüino`.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `pingüino` correctamente.
+* Resultado obtenido: La interfaz mostró `pingüino` correctamente.
+
+<img width="671" height="409" alt="image" src="https://github.com/user-attachments/assets/3c417c8a-c62b-495e-9377-3ec606444812" />
+
+---
+
+## Caso de prueba INV-07: Números 0–9 con prefijo numérico
+
+**Objetivo**
+Verificar que los dígitos 0–9 se decodifiquen correctamente a partir del prefijo numérico y la serie a–j.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `0123456789`
+* Resultado esperado: El texto decodificado debe ser `0123456789`, sin celdas desconocidas.
+* Resultado obtenido: PASS sin errores.
+
+<img width="599" height="338" alt="image" src="https://github.com/user-attachments/assets/6269c0a2-c0d2-406b-9272-3c54636ace9d" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `0123456789`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `0123456789` (prefijo numérico + serie a–j).
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `0123456789`.
+* Resultado obtenido: La interfaz mostró `0123456789` correctamente.
+
+<img width="694" height="392" alt="image" src="https://github.com/user-attachments/assets/d3c2fa04-fd0e-441a-b283-ebcae3d753d0" />
+
+---
+
+## Caso de prueba INV-08: Letra tras número (indicador de letra-tras-número)
+
+**Objetivo**
+Verificar que una letra de la serie numérica (a–j) inmediatamente después de un número se decodifique como letra y no como dígito.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `5c`
+* Resultado esperado: El texto decodificado debe ser `5c` (el `5` como dígito, la `c` como letra).
+* Resultado obtenido: PASS sin errores.
+
+<img width="674" height="337" alt="image" src="https://github.com/user-attachments/assets/f2c44ef0-bcd1-4cde-90e3-3f7a67a99b4d" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `5c`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `5c` (incluye el indicador de letra-tras-número entre el `5` y la `c`).
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `5c`, sin confundir la `c` con un dígito.
+* Resultado obtenido: La interfaz mostró `5c` correctamente.
+<img width="737" height="377" alt="image" src="https://github.com/user-attachments/assets/ee80dd6d-79a1-44bb-8f9b-4caa46358c79" />
+---
+
+## Caso de prueba INV-09: Números con coma o punto decimal
+
+**Objetivo**
+Verificar que los números con coma o punto decimal se decodifiquen sin duplicar el prefijo numérico.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `20,15` y `46.37`
+* Resultado esperado: El texto decodificado debe ser idéntico al original en ambos casos.
+* Resultado obtenido: PASS sin errores.
+
+<img width="653" height="321" alt="image" src="https://github.com/user-attachments/assets/361f92f6-2da9-4569-9cf4-dc8f542bd559" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `20,15`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `20,15`.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `20,15`.
+* Resultado obtenido: La interfaz mostró `20,15` correctamente.
+<img width="680" height="425" alt="image" src="https://github.com/user-attachments/assets/1e01fa43-a7a6-4651-8b26-7b938e1d5082" />
+---
+
+## Caso de prueba INV-10: Fecha con guiones
+
+**Objetivo**
+Verificar que una fecha con guiones se decodifique correctamente.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `25-11-2025`
+* Resultado esperado: El texto decodificado debe ser `25-11-2025`.
+* Resultado obtenido: PASS sin errores.
+
+
+<img width="615" height="326" alt="image" src="https://github.com/user-attachments/assets/da0cd6d4-862f-47cc-bdab-ad003870d515" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `25-11-2025`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `25-11-2025`.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `25-11-2025`.
+* Resultado obtenido: La interfaz mostró `25-11-2025` correctamente.
+
+<img width="715" height="368" alt="image" src="https://github.com/user-attachments/assets/6ea1d7c5-80c0-444b-878f-25e4d269949a" />
+
+---
+
+## Caso de prueba INV-11: Siglas con guion y mayúsculas (FIS-EPN)
+
+**Objetivo**
+Verificar que siglas con guion y mayúsculas se decodifiquen correctamente.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `FIS-EPN`
+* Resultado esperado: El texto decodificado debe ser `FIS-EPN`.
+* Resultado obtenido: PASS sin errores.
+
+<img width="588" height="325" alt="image" src="https://github.com/user-attachments/assets/f62a5132-6d33-4f0a-aa43-98bca1935651" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `FIS-EPN`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `FIS-EPN`.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `FIS-EPN`.
+* Resultado obtenido: La interfaz mostró `FIS-EPN` correctamente.
+
+<img width="691" height="370" alt="image" src="https://github.com/user-attachments/assets/8df7d95f-7031-4395-9362-9c76d3cae649" />
+
+---
+
+## Caso de prueba INV-12: Múltiples espacios consecutivos
+
+**Objetivo**
+Verificar que los espacios múltiples se mantengan correctamente al decodificar (mismo criterio que TC-15 de la primera iteración, aplicado ahora al sentido inverso).
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `hola     mundo` (5 espacios)
+* Resultado esperado: El texto decodificado debe conservar los 5 espacios entre las palabras.
+* Resultado obtenido: PASS sin errores.
+
+<img width="588" height="324" alt="image" src="https://github.com/user-attachments/assets/0f2265b2-8268-465b-8b1b-6f204db59749" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `hola     mundo`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a `hola     mundo` (5 espacios).
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar la separación completa entre `hola` y `mundo`, sin colapsar los espacios.
+* Resultado obtenido: La interfaz mantuvo correctamente la separación entre palabras.
+
+<img width="733" height="401" alt="image" src="https://github.com/user-attachments/assets/27904262-c907-403e-b8d5-00d6f38ee3ad" />
+
+---
+
+## Caso de prueba INV-13: Signos de puntuación sin ambigüedad
+
+**Objetivo**
+Verificar que los signos de puntuación que no comparten celda con otro carácter se decodifiquen tal cual.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `Hola, mundo; ! ? : ( ) *`
+* Resultado esperado: El texto decodificado debe ser idéntico al original.
+* Resultado obtenido: PASS sin errores.
+
+<img width="598" height="313" alt="image" src="https://github.com/user-attachments/assets/0e535ea4-11be-4ab2-bb74-6baabc1d4ea8" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `Hola, mundo; ! ? : ( ) *`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Pegar el braille correspondiente a la frase.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar la frase completa con todos sus signos de puntuación.
+* Resultado obtenido: La interfaz mostró la frase completa correctamente.
+
+<img width="685" height="367" alt="image" src="https://github.com/user-attachments/assets/5e91d265-e510-4d66-9c60-f227b9b148c6" />
+
+---
+
+## Caso de prueba INV-14: Ambigüedad conocida — apóstrofe y punto comparten celda
+
+**Objetivo**
+Documentar que, por ser una limitación real del braille grado 1 de 6 puntos (hay más signos que combinaciones posibles), el apóstrofe (`'`) y el punto (`.`) comparten la misma celda, y al decodificar siempre se obtiene el punto.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `'` (apóstrofe)
+* Resultado esperado: El texto decodificado debe ser `.` (comportamiento esperado del sistema, no un error).
+* Resultado obtenido: PASS — se obtuvo `.` como estaba previsto.
+
+<img width="599" height="334" alt="image" src="https://github.com/user-attachments/assets/c086ba32-2857-4bbe-9545-d7af03dbc189" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `'`
+* Procedimiento:
+   1. En el modo **Texto → Braille**, escribir `'` y traducir; copiar el braille generado.
+   2. Cambiar al modo **Braille → Texto** y pegar ese braille.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `.`, evidenciando la celda compartida.
+* Resultado obtenido: La interfaz mostró `.` en vez de `'`, confirmando la limitación documentada.
+
+<img width="682" height="367" alt="image" src="https://github.com/user-attachments/assets/c8707c93-210c-4378-8d7c-10c3b207d593" />
+
+---
+
+## Caso de prueba INV-15: ¿ y ¡ se distinguen de ? y ! por contexto
+
+**Objetivo**
+Verificar que el sistema distinga los signos de apertura (¿, ¡) de sus versiones de cierre (?, !) según la posición en la frase, gracias a la desambiguación por contexto agregada en esta iteración.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `¿cómo?`, `¡Bien!` y `¿Vienes hoy? Claro que sí`
+* Resultado esperado: El texto decodificado debe ser idéntico al original en los tres casos.
+* Resultado obtenido: PASS sin errores.
+
+<img width="639" height="353" alt="image" src="https://github.com/user-attachments/assets/afb29934-e32a-4792-ac61-3c289e2c7d6f" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `¿cómo?`
+* Procedimiento:
+   1. En el modo **Texto → Braille**, escribir `¿cómo?` y traducir; copiar el braille generado.
+   2. Cambiar al modo **Braille → Texto** y pegar ese braille.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `¿cómo?` completo, con la apertura y el cierre correctos.
+* Resultado obtenido: La interfaz mostró `¿cómo?` correctamente.
+
+<img width="725" height="359" alt="image" src="https://github.com/user-attachments/assets/70ace500-f184-48c2-aa88-e5391ff458af" />
+
+---
+
+## Caso de prueba INV-16: Ambigüedad conocida — comillas angulares y comillas rectas
+
+**Objetivo**
+Documentar que las comillas angulares (`«` `»`) comparten celda con las comillas rectas (`"`) y, al no tener desambiguación por contexto implementada, siempre se decodifican como comillas rectas.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `«cita»`
+* Resultado esperado: El texto decodificado debe ser `"cita"` (comportamiento esperado del sistema, no un error).
+* Resultado obtenido: PASS — se obtuvo `"cita"` como estaba previsto.
+
+<img width="601" height="328" alt="image" src="https://github.com/user-attachments/assets/80f47051-abfe-4c88-a2f4-6c8b850d2a52" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `«cita»`
+* Procedimiento:
+   1. En el modo **Texto → Braille**, escribir `«cita»` y traducir; copiar el braille generado.
+   2. Cambiar al modo **Braille → Texto** y pegar ese braille.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `"cita"` (con comillas rectas), evidenciando la celda compartida.
+* Resultado obtenido: La interfaz mostró `"cita"`, confirmando la limitación documentada.
+
+<img width="716" height="394" alt="image" src="https://github.com/user-attachments/assets/a2e0d22d-0dd9-4a6f-8dea-7362ac95d544" />
+
+---
+
+## Caso de prueba INV-17: + y / se distinguen por contexto numérico
+
+**Objetivo**
+Verificar que los operadores `+` y `/` (que comparten celda con `¡`/`!` e `í` respectivamente) se decodifiquen correctamente cuando aparecen en un contexto numérico, gracias a la desambiguación por contexto.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `3 + 5`, `3 / 4` y `(3 + 5) * 2 - 4 / 2`
+* Resultado esperado: El texto decodificado debe ser idéntico al original en los tres casos.
+* Resultado obtenido: PASS sin errores.
+
+<img width="592" height="288" alt="image" src="https://github.com/user-attachments/assets/af416156-c3c3-4298-b380-ecf3912ec349" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `(3 + 5) * 2 - 4 / 2`
+* Procedimiento:
+   1. En el modo **Texto → Braille**, escribir `(3 + 5) * 2 - 4 / 2` y traducir; copiar el braille generado.
+   2. Cambiar al modo **Braille → Texto** y pegar ese braille.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe mostrar `(3 + 5) * 2 - 4 / 2` con los operadores correctos.
+* Resultado obtenido: La interfaz mostró la expresión completa correctamente.
+
+<img width="678" height="391" alt="image" src="https://github.com/user-attachments/assets/e33ed3ae-3001-47e9-9203-36ec279c905a" />
+
+---
+
+## Caso de prueba INV-18 [LIMITACIÓN CONOCIDA]: í seguida de puntuación sin espacio
+
+**Objetivo**
+Dejar documentado, para su corrección futura, un caso real en el que la desambiguación de la í falla: cuando una palabra termina en í y le sigue un signo de puntuación pegado (sin espacio), el sistema la confunde con `/`.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `Sí.`
+* Resultado esperado (comportamiento correcto, aún no implementado): `Sí.`
+* Resultado obtenido (comportamiento actual): `S/.` — la í se decodifica como `/`.
+* Estado: PASS respecto al comportamiento *actual* del sistema (la prueba documenta el bug a propósito); pendiente de corrección en el módulo `traductor-inverso.js`.
+
+<img width="612" height="367" alt="image" src="https://github.com/user-attachments/assets/621a3102-eb94-4a37-ac0e-117ef0fa1a7f" />
+
+
+**Prueba funcional de interfaz**
+
+* Entrada: `Sí.`
+* Procedimiento:
+   1. En el modo **Texto → Braille**, escribir `Sí.` y traducir; copiar el braille generado.
+   2. Cambiar al modo **Braille → Texto** y pegar ese braille.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado (una vez corregido el bug): `Sí.`
+* Resultado obtenido (actual): `S/.`, confirmando visualmente el bug en la interfaz.
+
+<img width="740" height="395" alt="image" src="https://github.com/user-attachments/assets/5293fb78-3f1b-4f20-80b0-9a6af00a606b" />
+
+---
+
+## Caso de prueba INV-19: Carácter que no es braille Unicode
+
+**Objetivo**
+Verificar que un carácter fuera del rango Unicode braille (U+2800–U+283F) se cuente como "desconocido" y no aparezca en el texto resultante.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `a` (letra latina común, no un carácter braille)
+* Resultado esperado: El texto resultante debe quedar vacío y debe contarse 1 celda desconocida.
+* Resultado obtenido: PASS sin errores.
+
+<img width="625" height="326" alt="image" src="https://github.com/user-attachments/assets/45256980-a731-4b66-84a9-9b0e0a89aacb" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: `a`
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Escribir directamente la letra `a` (no braille) en el campo de entrada.
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: El resultado debe indicar 1 carácter no reconocido y no mostrar texto en el resultado.
+* Resultado obtenido: La interfaz reportó correctamente 1 celda no reconocida.
+
+<img width="712" height="275" alt="image" src="https://github.com/user-attachments/assets/27b23029-817c-4bdb-a521-38c44ae0f2c5" />
+
+---
+
+## Caso de prueba INV-20: Cadena vacía
+
+**Objetivo**
+Verificar que una cadena vacía no genere texto ni celdas desconocidas, y que la interfaz vuelva a su estado inicial.
+
+**Prueba unitaria (Jest)**
+
+* Entrada: `""` (cadena vacía)
+* Resultado esperado: El texto resultante y el conteo de desconocidos deben quedar en cero.
+* Resultado obtenido: PASS sin errores.
+
+<img width="589" height="325" alt="image" src="https://github.com/user-attachments/assets/53ff632c-053b-4fa6-8e8f-8ea45a69ccbc" />
+
+**Prueba funcional de interfaz**
+
+* Entrada: *(campo vacío)*
+* Procedimiento:
+   1. Cambiar al modo **Braille → Texto**.
+   2. Dejar el campo de entrada vacío (o presionar **Limpiar**).
+   3. Presionar **Traducir a texto**.
+* Resultado esperado: La interfaz debe mostrar el mensaje inicial ("Compón o pega braille y pulsa «Traducir a texto»") sin mostrar resultado ni acciones de impresión.
+* Resultado obtenido: La interfaz mantuvo correctamente el estado inicial.
+
+<img width="728" height="263" alt="image" src="https://github.com/user-attachments/assets/64a5c360-62ca-40ce-aee2-82ceaad079f1" />
+
+---
