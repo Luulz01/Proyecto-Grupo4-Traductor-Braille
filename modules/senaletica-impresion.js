@@ -6,7 +6,7 @@
  */
 
 /**
- * Estructura de elementos del DOM asociados a la placa de señalética.
+ * Estructura de elementos del DOM asociados a la placa de señalética
  * @typedef {Object} ElementosSenaletica
  * @property {HTMLElement} senaleticaTexto - Contenedor del texto en tinta.
  * @property {HTMLElement} senaleticaBraille - Contenedor del texto en braille Unicode.
