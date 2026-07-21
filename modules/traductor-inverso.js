@@ -1,6 +1,6 @@
 /**
  * Módulo de traducción inversa braille.
- * Convierte texto en braille (caracteres Unicode o patrón de puntos) a texto en español.
+ * Convierte texto en braille (caracteres Unicode o patrón de puntos) a texto en español
  */
 
 import {
