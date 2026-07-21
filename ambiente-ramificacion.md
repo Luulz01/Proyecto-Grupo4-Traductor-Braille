@@ -108,6 +108,9 @@ main
 ├── feature/senaletica
 ├── feature/interfaz
 └── feature/styles
+├── feature/senaletica-impresion
+└── feature/traductor-inverso
+
 ```
 
 <img width="1623" height="685" alt="{B344BCAD-1FDB-43E0-BF56-ECD6AFE83163}" src="https://github.com/user-attachments/assets/656c2faa-9e15-4bd6-8179-2edd7bd1221f" />
@@ -167,6 +170,14 @@ Gestiona la interacción del usuario, eventos de la interfaz y conexión entre m
 
 Contiene la estructura visual desarrollada con HTML y CSS para la interfaz gráfica del proyecto.
 
+## `feature/traductor-inverso`
+
+Implementa la traducción de Braille a español (módulo traductor-inverso.js), incluyendo el mapa inverso de patrones agregado en datos-braille.js.
+
+## `feature/senaletica-impresion` 
+
+Agrega la opción de impresión en espejo sobre senaletica-impresion.js, interfaz.js e index.html.
+
 
 <img width="1600" height="900" alt="image" src="https://github.com/user-attachments/assets/b9007f6a-27a1-4093-b1dc-325a1fc0841d" />
 
@@ -183,7 +194,11 @@ feature/datos-braille
 ↓
 feature/traductor-base
 ↓
+feature/traductor-inverso
+↓
 feature/senaletica
+↓
+feature/senaletica-impresion
 ↓
 feature/interfaz
 ↓
