@@ -37,6 +37,7 @@ export function iniciarApp() {
   const teclasPerkins = Array.from(document.querySelectorAll(".tecla-perkins"));
   const entradaBraille = document.getElementById("entrada-braille");
   const btnTraducirInverso = document.getElementById("btn-traducir-inverso");
+  const btnLimpiarInverso = document.getElementById("btn-limpiar-inverso");
   const salidaInverso = document.getElementById("salida-inverso");
   const estadoInverso = document.getElementById("estado-inverso");
   const accionesImpresionInverso = document.getElementById("acciones-impresion-inverso");
@@ -61,6 +62,7 @@ export function iniciarApp() {
     !senaleticaImpresion ||
     !entradaBraille ||
     !btnTraducirInverso ||
+    !btnLimpiarInverso ||
     !salidaInverso ||
     !estadoInverso ||
     !accionesImpresionInverso ||
@@ -340,10 +342,23 @@ export function iniciarApp() {
     }
   }
 
+  function limpiarInverso() {
+    entradaBraille.value = "";
+    limpiarPuntos();
+    salidaInverso.textContent = "";
+    salidaInverso.setAttribute("hidden", "");
+    estadoInverso.textContent = "Compón o pega braille y pulsa «Traducir a texto».";
+    mostrarAccionesImpresion(accionesImpresionInverso, false);
+    limpiarSenaletica();
+    entradaBraille.focus();
+  }
+
   btnTraducirInverso.addEventListener("click", traducirInverso);
+  btnLimpiarInverso.addEventListener("click", limpiarInverso);
   btnImprimirInverso.addEventListener("click", () =>
     imprimirSenaletica(salidaInverso.textContent, entradaBraille.value, elementosSenaletica, radioInversoEspejo.checked)
   );
 
   actualizarContador();
 }
+
